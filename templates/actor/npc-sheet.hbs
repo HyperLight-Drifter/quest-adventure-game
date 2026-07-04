@@ -93,6 +93,16 @@
         {{/each}}
       </ol>
 
+      <div class="trait-row">
+        <label class="trait-label">Ideal</label>
+        <input type="text" class="trait-input" name="system.ideal" value="{{system.ideal}}">
+      </div>
+
+      <div class="trait-row">
+        <label class="trait-label">Flaw</label>
+        <input type="text" class="trait-input" name="system.flaw" value="{{system.flaw}}">
+      </div>
+
       <label class="section-label">Description</label>
       <prose-mirror name="system.description" button="true" editable="{{editable}}" toggled="false" value="{{system.description}}">{{{enrichedDescription}}}</prose-mirror>
     </div>
@@ -106,6 +116,10 @@
           <label class="slots-label">Slots</label>
           <input type="number" class="slots-input" name="system.inventorySlots" value="{{mainInventory.slotCount}}" min="0">
           <a class="add-ability inline-add" data-action="createItemInSlot" data-container-id="main">+</a>
+          <div class="fold-controls">
+            <a class="fold-button" data-action="expandAllItems" title="Expand All">▼</a>
+            <a class="fold-button" data-action="collapseAllItems" title="Collapse All">▶</a>
+          </div>
           <a class="add-container" data-action="addContainer">Add Container</a>
         </div>
 

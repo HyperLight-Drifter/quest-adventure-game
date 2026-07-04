@@ -10,7 +10,7 @@ export default class QuestCharacterSheet extends foundry.applications.api.Handle
 ) {
   static DEFAULT_OPTIONS = {
     tag: "form",
-    classes: ["quest", "sheet", "actor", "character"],
+    classes: ["quest", "sheet", "actor", "character", "themed", "theme-light"],
     position: {
       width: 600,
       height: 700
@@ -31,6 +31,8 @@ export default class QuestCharacterSheet extends foundry.applications.api.Handle
       editItem: this._onEditItem,
       expandAll: this._onExpandAll,
       collapseAll: this._onCollapseAll,
+      expandAllItems: this._onExpandAllItems,
+      collapseAllItems: this._onCollapseAllItems,
       createItemInSlot: this._onCreateItemInSlot,
       addContainer: this._onAddContainer,
       removeContainer: this._onRemoveContainer,
@@ -306,6 +308,20 @@ const pathGroups = {};
 
   static _onCollapseAll(event, target) {
     this._expandedAbilities.clear();
+    this.render();
+  }
+
+  static _onExpandAllItems(event, target) {
+    for (const item of this.actor.items) {
+      if (item.type === "item") {
+        this._expandedItems.add(item.id);
+      }
+    }
+    this.render();
+  }
+
+  static _onCollapseAllItems(event, target) {
+    this._expandedItems.clear();
     this.render();
   }
 

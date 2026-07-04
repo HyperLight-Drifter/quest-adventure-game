@@ -3,6 +3,7 @@ export default class QuestItemData extends foundry.abstract.TypeDataModel {
     const fields = foundry.data.fields;
 
     return {
+      rarity: new fields.StringField({ required: false, blank: true, initial: "" }),
       description: new fields.StringField({ required: false, blank: true, initial: "" }),
       hasRoll: new fields.BooleanField({ required: true, initial: false }),
       rollTiers: new fields.ArrayField(

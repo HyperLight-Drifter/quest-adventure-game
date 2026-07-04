@@ -2,7 +2,7 @@ export default class QuestItemSheet extends foundry.applications.api.HandlebarsA
   foundry.applications.sheets.ItemSheetV2
 ) {
   static DEFAULT_OPTIONS = {
-    classes: ["quest", "sheet", "item", "gear"],
+    classes: ["quest", "sheet", "item", "gear", "themed", "theme-light"],
     position: { width: 500, height: 600 },
     window: { resizable: true },
     actions: {
@@ -36,17 +36,43 @@ export default class QuestItemSheet extends foundry.applications.api.HandlebarsA
     this._initAutoResize();
   }
 
+/**
+   * Make textareas grow with their content instead of exposing a manual
+   * resize handle.
+   */
   _initAutoResize() {
-    const textareas = this.element.querySelectorAll("textarea.auto-resize");
-    for (const el of textareas) {
-      const resize = () => {
+    if (CSS.supports("field-sizing", "content")) return;
+      const container = this.element;
+      const resizeOne = el => {
         el.style.height = "auto";
         el.style.height = `${el.scrollHeight}px`;
       };
-      resize();
-      el.addEventListener("input", resize);
+      const resizeAll = () => {
+        for (const el of container.querySelectorAll("textarea.auto-resize")) resizeOne(el);
+      };
+
+      for (const el of container.querySelectorAll("textarea.auto-resize")) {
+        resizeOne(el);
+        el.addEventListener("input", () => resizeOne(el));
+      }
+
+      document.fonts?.ready.then(() => resizeAll());
+
+      this._autoResizeObserver?.disconnect();
+      let lastWidth = container.getBoundingClientRect().width;
+      this._autoResizeObserver = new ResizeObserver(entries => {
+        const width = entries[0].contentRect.width;
+        if (width === lastWidth) return;
+        lastWidth = width;
+        requestAnimationFrame(resizeAll);
+      });
+      this._autoResizeObserver.observe(container);
     }
-  }
+  
+  async _onClose(options) {
+    this._autoResizeObserver?.disconnect();
+    await super._onClose(options);
+  }  
 
   static async _onSubmitForm(event, form, formData) {
     const data = formData.object;

@@ -9,7 +9,7 @@ export default class QuestNpcSheet extends foundry.applications.api.HandlebarsAp
 ) {
   static DEFAULT_OPTIONS = {
     tag: "form",
-    classes: ["quest", "sheet", "actor", "npc"],
+    classes: ["quest", "sheet", "actor", "npc", "themed", "theme-light"],
     position: {
       width: 600,
       height: 700
@@ -29,6 +29,8 @@ export default class QuestNpcSheet extends foundry.applications.api.HandlebarsAp
       editItem: this._onEditItem,
       expandAll: this._onExpandAll,
       collapseAll: this._onCollapseAll,
+      expandAllItems: this._onExpandAllItems,
+      collapseAllItems: this._onCollapseAllItems,
       createItemInSlot: this._onCreateItemInSlot,
       addContainer: this._onAddContainer,
       removeContainer: this._onRemoveContainer,
@@ -282,6 +284,20 @@ export default class QuestNpcSheet extends foundry.applications.api.HandlebarsAp
 
   static _onCollapseAll(event, target) {
     this._expandedAbilities.clear();
+    this.render();
+  }
+
+  static _onExpandAllItems(event, target) {
+    for (const item of this.actor.items) {
+      if (item.type === "item") {
+        this._expandedItems.add(item.id);
+      }
+    }
+    this.render();
+  }
+
+  static _onCollapseAllItems(event, target) {
+    this._expandedItems.clear();
     this.render();
   }
 

@@ -20,7 +20,7 @@ export default class QuestNpcData extends foundry.abstract.TypeDataModel {
       att: new fields.NumberField({
         required: true,
         integer: true,
-        initial: 10,
+        initial: 0,
         min: 0
       }),
       armor: new fields.NumberField({
@@ -43,6 +43,8 @@ export default class QuestNpcData extends foundry.abstract.TypeDataModel {
         }),
         { initial: [] }
       ),
+      ideal: new fields.StringField({ blank: true, initial: "" }),
+      flaw: new fields.StringField({ blank: true, initial: "" }),
       description: new fields.HTMLField({ required: false, blank: true, initial: "" }),
       notes: new fields.HTMLField({ required: false, blank: true, initial: "" })
     };

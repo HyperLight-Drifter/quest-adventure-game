@@ -4,7 +4,7 @@ export default class QuestAbilitySheet extends foundry.applications.api.Handleba
   foundry.applications.sheets.ItemSheetV2
 ) {
   static DEFAULT_OPTIONS = {
-    classes: ["quest", "sheet", "item", "ability"],
+    classes: ["quest", "sheet", "item", "ability", "themed", "theme-light"],
     position: { width: 500, height: 600 },
     window: { resizable: true },
     actions: {
@@ -45,15 +45,37 @@ export default class QuestAbilitySheet extends foundry.applications.api.Handleba
    * resize handle.
    */
   _initAutoResize() {
-    const textareas = this.element.querySelectorAll("textarea.auto-resize");
-    for (const el of textareas) {
-      const resize = () => {
+    if (CSS.supports("field-sizing", "content")) return;
+      const container = this.element;
+      const resizeOne = el => {
         el.style.height = "auto";
         el.style.height = `${el.scrollHeight}px`;
       };
-      resize();
-      el.addEventListener("input", resize);
+      const resizeAll = () => {
+        for (const el of container.querySelectorAll("textarea.auto-resize")) resizeOne(el);
+      };
+
+      for (const el of container.querySelectorAll("textarea.auto-resize")) {
+        resizeOne(el);
+        el.addEventListener("input", () => resizeOne(el));
+      }
+
+      document.fonts?.ready.then(() => resizeAll());
+
+      this._autoResizeObserver?.disconnect();
+      let lastWidth = container.getBoundingClientRect().width;
+      this._autoResizeObserver = new ResizeObserver(entries => {
+        const width = entries[0].contentRect.width;
+        if (width === lastWidth) return;
+        lastWidth = width;
+        requestAnimationFrame(resizeAll);
+      });
+      this._autoResizeObserver.observe(container);
     }
+
+  async _onClose(options) {
+    this._autoResizeObserver?.disconnect();
+    await super._onClose(options);
   }
 
   static async _onToggleRoll(event, target) {

@@ -142,6 +142,10 @@
           <label class="slots-label">Slots</label>
           <input type="number" class="slots-input" name="system.inventorySlots" value="{{mainInventory.slotCount}}" min="0">
           <a class="add-ability inline-add" data-action="createItemInSlot" data-container-id="main">+</a>
+          <div class="fold-controls">
+            <a class="fold-button" data-action="expandAllItems" title="Expand All">▼</a>
+            <a class="fold-button" data-action="collapseAllItems" title="Collapse All">▶</a>
+          </div>
           <a class="add-container" data-action="addContainer">Add Container</a>
         </div>
 

@@ -411,7 +411,18 @@
   text-align: center;
 }
 
-.add-container,
+.inventory-header .fold-controls {
+  margin-left: auto;
+}
+
+.add-container {
+  margin-left: 12px;
+  font-family: "Alegreya Sans SC Regular", sans-serif;
+  font-size: 14px;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
 .remove-container {
   margin-left: auto;
   font-family: "Alegreya Sans SC Regular", sans-serif;
@@ -466,6 +477,15 @@
 }
 
 /* ---------- Ability item sheet ---------- */
+
+@supports (field-sizing: content) {
+  .quest-ability-sheet .description-input,
+  .quest-ability-sheet .tier-input {
+    field-sizing: content;
+    height: auto;
+    max-height: none;
+  }
+}
 
 .quest-ability-sheet {
   background: #ffffff;
@@ -664,4 +684,28 @@
   font-size: 18px;
   text-transform: uppercase;
   margin: 16px 0 4px 0;
+}
+
+.trait-row {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin: 10px 0;
+}
+
+.trait-label {
+  font-family: "Alegreya Sans SC Regular", sans-serif;
+  font-size: 16px;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.trait-input {
+  flex: 1;
+  border: none;
+  border-bottom: 1px solid #000;
+  background: transparent;
+  font-family: "Ovo", serif;
+  font-size: 16px;
+  padding: 2px 0;
 }
