@@ -35,4 +35,8 @@ AI usage: Claude AI was involved in creation of the system.
 - Like abilities, items have a "Roll the Die" checkbox that reveals custom roll result fields and adds a roll button to their unfolded view.
 
 ### Combat Tracker
-- Clicking Start Combat opens a dialog prompting you to choose who acts first: characters or NPCs.
+- combatants are divided between PCs and NPCs and can be freely dragged between those groups
+- combatants have editable HP, AP and Armor within the tracker
+- left click to grey out a character who had their turn, right click to undo
+- next turn automatically ungrey all
+- recommendation: turn off enable markers in core settings/combat tracker
