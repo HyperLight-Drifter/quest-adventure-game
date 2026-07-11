@@ -1,10 +1,11 @@
 # Quest the Adventure Game
 
-An unofficial Foundry Virtual Tabletop system for **Quest: The Adventure Game** by **The Adventure Guild**. You can visit the game's official website here: https://www.adventure.game/
+An unofficial Foundry Virtual Tabletop system for **Quest: The Adventure Game** by **The Adventure Guild**. 
+
 
 AI usage: Claude AI was involved in creation of the system.
 
-> **Disclaimer:** This is an unofficial, fan-made project. It is not affiliated with, endorsed by, or sponsored by The Adventure Guild. All Quest game content, rules text, and terminology belong to their respective owners.
+> **Disclaimer:** This is an unofficial, fan-made project. It is not affiliated with, endorsed by, or sponsored by The Adventure Guild. All Quest game content, rules text, and terminology belong to their respective owners. This work is based on the Quest Creators Resource. The Quest Creators Resource by The Adventure Guild, LLC is licensed under CC BY 4.0. For more information about Quest, please visit www.adventure.game. Additionally, please read Quest’s Community Guidelines to help create experiences that arepositive and fun.
 
 ## Features
 
@@ -35,4 +36,8 @@ AI usage: Claude AI was involved in creation of the system.
 - Like abilities, items have a "Roll the Die" checkbox that reveals custom roll result fields and adds a roll button to their unfolded view.
 
 ### Combat Tracker
-- Clicking Start Combat opens a dialog prompting you to choose who acts first: characters or NPCs.
+- combatants are divided between PCs and NPCs and can be freely dragged between those groups
+- combatants have editable HP, AP and Armor within the tracker
+- left click to grey out a character who had their turn, right click to undo
+- next turn automatically ungrey all
+- recommendation: turn off enable markers in core settings/combat tracker
