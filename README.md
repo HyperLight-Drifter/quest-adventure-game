@@ -4,7 +4,7 @@ An unofficial Foundry Virtual Tabletop system for **Quest: The Adventure Game** 
 
 AI usage: Claude AI was involved in creation of the system.
 
-> **Disclaimer:** This is an unofficial, fan-made project. It is not affiliated with, endorsed by, or sponsored by The Adventure Guild. All Quest game content, rules text, and terminology belong to their respective owners.
+> **Disclaimer:** This is an unofficial, fan-made project. It is not affiliated with, endorsed by, or sponsored by The Adventure Guild. All Quest game content, rules text, and terminology belong to their respective owners. This work is based on the Quest Creators Resource. The Quest Creators Resource by The Adventure Guild, LLC is licensed under CC BY 4.0. For more information about Quest, please visit www.adventure.game. Additionally, please read Quest’s Community Guidelines to help create experiences that arepositive and fun.
 
 ## Features
 
