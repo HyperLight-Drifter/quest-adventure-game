@@ -39,13 +39,7 @@ export default class QuestCharacterSheet extends foundry.applications.api.Handle
       toggleItem: this._onToggleItem,
       removeItem: this._onRemoveItem,
       rollItem: this._onRollItem,
-    },
-
-    dragDrop: [
-      { dragSelector: ".ability-item", dropSelector: ".abilities-tab" },
-      { dragSelector: ".item-slot", dropSelector: ".inventory-tab" }
-    ]
-    
+    },    
   };
 
   static PARTS = {
@@ -62,7 +56,9 @@ export default class QuestCharacterSheet extends foundry.applications.api.Handle
     this._initContainerRename();
     this._initContainerSlotsEdit();
     fixCursorOnFocus(this.element);
-    initInputAutosize(this.element)
+    initInputAutosize(this.element);
+    this._initItemDragStart();
+    this._initDropZones();
   }
 
 _onChangeForm(formConfig, event) {
@@ -122,6 +118,104 @@ _initAbilityChatTrigger() {
     });
   }
 }
+
+_initItemDragStart() {
+    this.element.querySelectorAll(".ability-item[data-item-id]").forEach(el => {
+      el.setAttribute("draggable", "true");
+      el.addEventListener("dragstart", (event) => {
+        if (event.target.closest("a, button, input, select, textarea")) {
+          event.preventDefault();
+          return;
+        }
+        const item = this.actor.items.get(el.dataset.itemId);
+        if (!item) return;
+        event.dataTransfer.setData("text/plain", JSON.stringify({
+          type: "Item",
+          uuid: item.uuid
+        }));
+      });
+    });
+  }
+
+  _canDragStart(selector) {
+    return false;
+  }
+
+  _canDragDrop(selector) {
+    return false;
+  }
+
+  _initDropZones() {
+    this.element.querySelectorAll(".abilities-tab, .inventory-tab").forEach(zone => {
+      zone.addEventListener("dragover", (event) => event.preventDefault());
+      zone.addEventListener("drop", (event) => this._onManualDrop(event));
+    });
+  }
+
+  async _onManualDrop(event) {
+    event.preventDefault();
+    let data;
+    try {
+      data = JSON.parse(event.dataTransfer.getData("text/plain"));
+    } catch (e) {
+      return;
+    }
+    if (data.type !== "Item") return;
+
+    const item = await fromUuid(data.uuid);
+    if (!item) return;
+    if (item.parent?.id === this.actor.id) return;
+
+    if (item.type === "ability") {
+      const sourceUuid = item.uuid;
+      const alreadyExists = this.actor.items.some(
+        i => i.type === "ability" && i.getFlag("quest", "sourceUuid") === sourceUuid
+      );
+      if (alreadyExists) {
+        ui.notifications.warn("This ability is already on the sheet.");
+        return;
+      }
+
+      const itemData = item.toObject();
+      foundry.utils.setProperty(itemData, "flags.quest.sourceUuid", sourceUuid);
+      await this.actor.createEmbeddedDocuments("Item", [itemData]);
+      return;
+    }
+
+    if (item.type === "item") {
+      const containerEl = event.target.closest("[data-container-id]");
+      const containerId = containerEl ? containerEl.dataset.containerId : "main";
+
+      const slotCount = containerId === "main"
+        ? this.actor.system.inventorySlots
+        : this.actor.system.containers.find(c => c.id === containerId)?.slots ?? 0;
+
+      const gearItems = this.actor.items.filter(i => i.type === "item");
+      const occupied = new Set(
+        gearItems
+          .filter(it => (it.getFlag("quest", "containerId") ?? "main") === containerId)
+          .map(it => it.getFlag("quest", "slotIndex"))
+      );
+
+      let freeIndex = -1;
+      for (let i = 0; i < slotCount; i++) {
+        if (!occupied.has(i)) {
+          freeIndex = i;
+          break;
+        }
+      }
+
+      if (freeIndex === -1) {
+        ui.notifications.warn("No empty slots available in this container.");
+        return;
+      }
+
+      const itemData = item.toObject();
+      foundry.utils.setProperty(itemData, "flags.quest.containerId", containerId);
+      foundry.utils.setProperty(itemData, "flags.quest.slotIndex", freeIndex);
+      await this.actor.createEmbeddedDocuments("Item", [itemData]);
+    }
+  }
 
 async _postAbilityToChat(itemId) {
   const item = this.actor.items.get(itemId);
@@ -478,63 +572,5 @@ const pathGroups = {};
     const cost = Number(target.dataset.cost) || 0;
     const current = this.actor.system.ap;
     await this.actor.update({ "system.ap": current - cost });
-  }
-
-  async _onDrop(event) {
-    const data = TextEditor.getDragEventData(event);
-    if (data.type !== "Item") return;
-
-    const item = await Item.implementation.fromDropData(data);
-    if (!item) return;
-
-    if (item.type === "ability") {
-      const sourceUuid = item.uuid;
-      const alreadyExists = this.actor.items.some(
-        i => i.type === "ability" && i.getFlag("quest", "sourceUuid") === sourceUuid
-      );
-      if (alreadyExists) {
-        ui.notifications.warn("This ability is already on the sheet.");
-        return;
-      }
-
-      const itemData = item.toObject();
-      foundry.utils.setProperty(itemData, "flags.quest.sourceUuid", sourceUuid);
-      await this.actor.createEmbeddedDocuments("Item", [itemData]);
-      return;
-    }
-
-    if (item.type === "item") {
-      const containerEl = event.target.closest("[data-container-id]");
-      const containerId = containerEl ? containerEl.dataset.containerId : "main";
-
-      const slotCount = containerId === "main"
-        ? this.actor.system.inventorySlots
-        : this.actor.system.containers.find(c => c.id === containerId)?.slots ?? 0;
-
-      const gearItems = this.actor.items.filter(i => i.type === "item");
-      const occupied = new Set(
-        gearItems
-          .filter(it => (it.getFlag("quest", "containerId") ?? "main") === containerId)
-          .map(it => it.getFlag("quest", "slotIndex"))
-      );
-
-      let freeIndex = -1;
-      for (let i = 0; i < slotCount; i++) {
-        if (!occupied.has(i)) {
-          freeIndex = i;
-          break;
-        }
-      }
-
-      if (freeIndex === -1) {
-        ui.notifications.warn("No empty slots available in this container.");
-        return;
-      }
-
-      const itemData = item.toObject();
-      foundry.utils.setProperty(itemData, "flags.quest.containerId", containerId);
-      foundry.utils.setProperty(itemData, "flags.quest.slotIndex", freeIndex);
-      await this.actor.createEmbeddedDocuments("Item", [itemData]);
-    }
-  }
+  }  
 }

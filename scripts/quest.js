@@ -6,9 +6,12 @@ import QuestItemData from "./data/item-data.js";
 import QuestItemSheet from "./sheets/item-sheet.js";
 import QuestNpcData from "./data/npc-data.js";
 import QuestNpcSheet from "./sheets/npc-sheet.js";
+import { QuestCombat } from "./combat.js";
+import "./combat-tracker.js";
 
 Hooks.once("init", () => {
   CONFIG.Actor.dataModels.character = QuestCharacterData;
+  CONFIG.Combat.documentClass = QuestCombat;
 
   foundry.applications.apps.DocumentSheetConfig.registerSheet(
     Actor,
@@ -93,29 +96,4 @@ Hooks.on("preCreateActor", (actor, data, options, userId) => {
   actor.updateSource({
     prototypeToken: tokenUpdate
   });
-});
-
-Hooks.on("combatStart", async (combat) => {
-  const choice = await foundry.applications.api.DialogV2.wait({
-    window: { title: "Who Goes First?" },
-    content: "<p>Who acts first this combat?</p>",
-    buttons: [
-      { action: "character", label: "Characters", default: true },
-      { action: "npc", label: "NPCs" }
-    ]
-  });
-
-  if (!choice) return;
-
-  const updates = combat.combatants.map(combatant => {
-    const actorType = combatant.actor?.type;
-    const isWinner = actorType === choice;
-    return {
-      _id: combatant.id,
-      initiative: isWinner ? 2 : 1
-    };
-  });
-
-  await combat.updateEmbeddedDocuments("Combatant", updates);
-  await combat.update({ turn: 0 });
 });

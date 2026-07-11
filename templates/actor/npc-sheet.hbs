@@ -125,7 +125,7 @@
 
         <ol class="abilities-list">
           {{#each mainInventory.slots as |slot|}}
-          <li class="ability-item item-slot">
+          <li class="ability-item item-slot" {{#if slot.filled}}data-item-id="{{slot.id}}"{{/if}}>
             {{#if slot.filled}}
             <div class="ability-row" data-action="toggleItem" data-item-id="{{slot.id}}">
               <span class="slot-number">{{slot.slotNumber}}.</span>
@@ -173,7 +173,7 @@
 
         <ol class="abilities-list">
           {{#each container.slots as |slot|}}
-          <li class="ability-item item-slot">
+          <li class="ability-item item-slot" {{#if slot.filled}}data-item-id="{{slot.id}}"{{/if}}>
             {{#if slot.filled}}
             <div class="ability-row" data-action="toggleItem" data-item-id="{{slot.id}}">
               <span class="slot-number">{{slot.slotNumber}}.</span>
